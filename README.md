@@ -1,465 +1,31 @@
 # 🍎 Real-Time Fruit Detection and Counting Using YOLO
 
-An end-to-end computer vision project for detecting, classifying, and counting fruits in real time using a webcam.
+An end-to-end computer vision project for **detecting, classifying, and counting fruits in real time using a webcam**.
 
-The project covers the complete object detection workflow: **data collection, annotation cleanup, preprocessing, dataset construction, model training, evaluation, model comparison, and real-time deployment**.
+The project covers the complete object detection workflow: **data collection, preprocessing, model training, held-out test evaluation, model comparison, and real-time deployment** using **Ultralytics YOLO and OpenCV**.
 
-Two YOLO models — **YOLO11n** and **YOLO26n** — were trained and evaluated under comparable settings. Based on held-out test performance, **YOLO11n was selected as the final model** for the real-time webcam application.
+### Supported Classes
 
----
-
-## Table of Contents
-
-- [Project Overview](#project-overview)
-- [Project Objectives](#project-objectives)
-- [Supported Classes](#supported-classes)
-- [Project Workflow](#project-workflow)
-- [Dataset](#dataset)
-- [Data Preprocessing](#data-preprocessing)
-- [Models](#models)
-- [Results](#results)
-- [Demo](#demo)
+**🍎 Apple · 🥭 Mango · 🍌 Banana · 🍊 Orange**
 
 ---
 
-# 🔍 Project Overview
+## Key Results
 
-This project was developed for **educational purposes** to explore the complete lifecycle of a computer vision object detection system.
+Two lightweight YOLO models — **YOLO11n** and **YOLO26n** — were trained under comparable settings and evaluated on the same held-out test set.
 
-The primary goal is to build a system capable of detecting and classifying multiple fruits from **live webcam footage** and displaying the number of detected fruits in the current frame.
+| Model | Precision | Recall | mAP@50 | mAP@50–95 |
+|---|---:|---:|---:|---:|
+| **YOLO11n 🏆** | **0.8950** | 0.9091 | **0.9466** | **0.8788** |
+| YOLO26n | 0.8503 | **0.9198** | 0.9218 | 0.8400 |
 
-The project includes:
+### 🏆 Selected Model: YOLO11n
 
-- Data collection from multiple sources
-- Custom real-world image collection
-- Data annotation review
-- Bounding-box cleanup
-- Filename normalization
-- Dataset balancing
-- Train/validation/test splitting
-- Training YOLO11n
-- Training YOLO26n
-- Evaluation on a held-out test set
-- Comparison between both models
-- Selection of the best-performing model
-- Real-time webcam inference
-- Per-class fruit counting
-- Total fruit counting
+Although YOLO26n achieved slightly higher recall, **YOLO11n achieved higher precision, mAP@50, and mAP@50–95**.
 
-The project currently supports four fruit classes:
+Based on its stronger overall performance on the held-out test set, **YOLO11n was selected as the final model for the real-time webcam application**.
 
-**Apple, Mango, Banana, and Orange.**
-
----
-
-# 🎯 Project Objectives
-
-The main objectives of this project are to:
-
-1. Build an end-to-end object detection pipeline for fruit recognition.
-2. Detect multiple fruit types in real-world images.
-3. Detect multiple fruits simultaneously within the same image.
-4. Compare two YOLO architectures under similar training and evaluation settings.
-5. Evaluate both models using a held-out test set.
-6. Select the better-performing model based on quantitative metrics.
-7. Deploy the selected model for real-time webcam inference.
-8. Count detected fruits by class and display the total number of detections.
-9. Study the challenges involved in moving from dataset-based evaluation to real-world webcam input.
-
----
-
-# 🍊 Supported Classes
-
-The dataset uses four object classes:
-
-| Class ID | Fruit |
-|---:|---|
-| `0` | Apple |
-| `1` | Mango |
-| `2` | Banana |
-| `3` | Orange |
-
-The class IDs are used throughout the YOLO annotations and model training process.
-
----
-
-# 🔄 Project Workflow
-
-The overall project pipeline is:
-
-```text
-        Kaggle Dataset
-               │
-               │
-        Roboflow Dataset
-               │
-               │
-    Internet-Collected Images
-               │
-               │
- Custom Webcam Data Collection
-               │
-               ▼
-      Annotation Review
-               │
-               ▼
-    Bounding-Box Cleanup
-               │
-               ▼
-    Filename Normalization
-               │
-               ▼
-       Dataset Merging
-               │
-               ▼
-     Dataset Balancing
-               │
-               ▼
-   Train / Validation / Test
-               │
-          ┌────┴────┐
-          ▼         ▼
-      YOLO11n    YOLO26n
-          │         │
-          ▼         ▼
-       Training   Training
-          │         │
-          ▼         ▼
-      Best.pt    Best.pt
-          │         │
-          └────┬────┘
-               ▼
-      Held-Out Test Set
-               │
-               ▼
-       Model Comparison
-               │
-               ▼
-     YOLO11n Selected
-               │
-               ▼
-     Real-Time Webcam
-               │
-               ▼
- Detection + Classification
-               │
-               ▼
- Per-Class & Total Counting
-```
-
----
-
-# 📊 Dataset
-
-## Data Sources
-
-The dataset was constructed from several sources to improve diversity and expose the models to different environments, backgrounds, lighting conditions, fruit appearances, and object combinations.
-
-### 1. Kaggle Dataset
-
-Part of the data was obtained from the **Fruits Images Dataset (Object Detection)** available on Kaggle.
-
-Dataset:
-
-**Fruits Images Dataset – Object Detection**
-
-https://www.kaggle.com/datasets/afsananadia/fruits-images-dataset-object-detection
-
-The downloaded data contained fruit images and their corresponding object detection annotations.
-
----
-
-### 2. Roboflow Data
-
-Additional annotated fruit images were obtained and processed using **Roboflow**.
-
-Roboflow was also used during the annotation review process to inspect and verify bounding boxes before preparing the final dataset.
-
-The exact original Roboflow project source is no longer available, so no specific source URL is claimed here.
-
----
-
-### 3. Manually Collected Internet Images
-
-Additional fruit images were manually collected from public internet image searches, including sources discovered through Google Images.
-
-These images were used during dataset development to increase visual diversity.
-
-> **Note:** Images discovered through public search engines may remain subject to their original owners' copyright and licensing terms.
-
----
-
-### 4. Personally Collected Webcam Images
-
-Additional real-world images were captured using a webcam.
-
-In particular, mango images were collected while holding a mango in front of the camera. This helped introduce examples that more closely resemble the environment in which the final real-time detector would operate.
-
-Negative/background images containing **no target fruit** were also captured.
-
-These negative samples were useful for exposing the detector to scenes where none of the four target classes were present.
-
-Some personally collected images were intentionally excluded from the public repository for privacy.
-
----
-
-## Dataset Composition
-
-During development, the dataset was balanced to approximately **175 single-fruit images per class** before the addition/consideration of mixed-fruit and negative examples.
-
-The privacy-safe dataset currently made public contains:
-
-| Category | Public Images |
-|---|---:|
-| Apple-only | 175 |
-| Mango-only | 153 |
-| Banana-only | 175 |
-| Orange-only | 175 |
-| Mixed-fruit | 39 |
-| Negative/background | 0 |
-| **Total** | **717** |
-
-The mango count is lower in the public version because personally collected mango images were intentionally excluded for privacy.
-
-The **39 mixed-fruit images** contain more than one fruit and are useful for evaluating the model's ability to detect multiple objects/classes in the same scene.
-
-> The numbers above represent **image counts**, not the number of annotated object instances. A mixed-fruit image may contain multiple annotated fruits.
-
----
-
-## Dataset Split
-
-The final dataset was divided approximately using:
-
-| Split | Percentage |
-|---|---:|
-| Training | ~70% |
-| Validation | ~20% |
-| Test | ~10% |
-
-The training split was used for model optimization, the validation split was used during training, and the test split was reserved for final model evaluation.
-
----
-
-## Privacy and Public Dataset
-
-> [!IMPORTANT]
-> **The publicly available dataset is not identical to the complete local dataset used for the reported experiments.**
-
-The models reported in this repository were trained using the complete local dataset, which included additional personally collected webcam images.
-
-Some of these images were intentionally removed from the public GitHub repository to protect personal privacy.
-
-In particular:
-
-- Personally collected mango images were partially excluded.
-- Personally collected negative/background images were excluded.
-- The trained models were created **before** these privacy-related exclusions.
-
-Therefore, the dataset publicly available in this repository should be considered a **privacy-safe subset** of the original experimental dataset.
-
-As a result, retraining exclusively on the public dataset may not reproduce the reported metrics exactly.
-
----
-
-# 🧹 Data Preprocessing
-
-Several preprocessing scripts were created to prepare data from different sources before training.
-
-## `Capturing_Mango_Images.py`
-
-This script was developed to capture additional mango images directly from a webcam.
-
-The images were collected while holding a mango in front of the camera.
-
-### Purpose
-
-- Increase the number of real-world mango examples.
-- Introduce webcam-style lighting and backgrounds.
-- Reduce the difference between training images and real webcam input.
-- Increase dataset diversity.
-
----
-
-## `Capturing_Negative_Images.py`
-
-This script captures webcam images where **none of the target fruits are present**.
-
-### Purpose
-
-Negative images help expose the detector to background-only scenes and can help reduce false detections when the target objects are absent.
-
-The personally captured negative images used during development are not included in the public dataset for privacy reasons.
-
----
-
-## `Fixing_Kaggle_Data.py`
-
-This script cleans and standardizes the Kaggle-derived data after annotation review.
-
-It was used to:
-
-- Process annotation coordinates.
-- Remove/fix excess coordinate information where required.
-- Standardize the annotations for the final YOLO dataset.
-- Rename files into a consistent naming structure.
-
----
-
-## `Fixing_Roboflow_Data.py`
-
-This script performs similar cleanup for data exported after the Roboflow annotation/review workflow.
-
-It was used to:
-
-- Clean annotation coordinates.
-- Standardize label information.
-- Normalize filenames.
-- Prepare the data for integration into the final dataset.
-
----
-
-# 🏷️ Annotation Format
-
-The project uses the **YOLO object detection annotation format**.
-
-A typical YOLO label follows:
-
-```text
-class_id x_center y_center width height
-```
-
-The bounding-box coordinates are normalized relative to the image dimensions.
-
-Example:
-
-```text
-0 0.512 0.476 0.341 0.428
-```
-
-where `0` corresponds to the **Apple** class.
-
----
-
-# 🤖 Models
-
-Two lightweight YOLO object detection models were investigated:
-
-### YOLO11n
-
-Initialized from:
-
-```text
-yolo11n.pt
-```
-
-### YOLO26n
-
-Initialized from:
-
-```text
-yolo26n.pt
-```
-
-Both models started from pretrained Ultralytics weights and were fine-tuned on the fruit detection dataset.
-
-The trained model checkpoints included in this repository are located in:
-
-```text
-Models/
-├── Yolo11.pt
-└── Yolo26.pt
-```
-
----
-
-# ⚙️ Training Configuration
-
-Both models were trained using comparable configurations to provide a fair experimental comparison.
-
-| Parameter | YOLO11n | YOLO26n |
-|---|---:|---:|
-| Pretrained initialization | `yolo11n.pt` | `yolo26n.pt` |
-| Maximum epochs | 100 | 100 |
-| Early stopping patience | 15 | 15 |
-| Input image size | 640 | 640 |
-| Batch size | 8 | 8 |
-| Optimizer | Auto | Auto |
-| Training framework | Ultralytics | Ultralytics |
-| Training plots | Enabled | Enabled |
-
-Early stopping was enabled with a patience value of 15, allowing training to terminate when validation performance stopped improving for the specified period.
-
-Using comparable configurations allows the final model comparison to focus primarily on their observed detection performance.
-
----
-
-# 🧪 Evaluation Methodology
-
-The final model comparison was performed using the **best checkpoint obtained during training** for each model.
-
-The checkpoints were evaluated specifically on the held-out **test split**:
-
-```python
-metrics = model.val(
-    data="Data/Final_data/data.yaml",
-    split="test",
-    imgsz=640,
-    batch=8
-)
-```
-
-Both models were evaluated using:
-
-- The same held-out test data
-- `640` image size
-- Batch size of `8`
-- The same Ultralytics evaluation pipeline
-
-The primary metrics were:
-
-### Precision
-
-Measures how many predicted detections were correct.
-
-### Recall
-
-Measures how many ground-truth objects were successfully detected.
-
-### mAP@50
-
-Mean Average Precision using an IoU threshold of 0.50.
-
-### mAP@50–95
-
-Mean Average Precision averaged across IoU thresholds from 0.50 to 0.95.
-
-mAP@50–95 provides a stricter overall assessment of object detection and bounding-box localization quality.
-
----
-
-# 📈 Results
-
-## YOLO11n vs YOLO26n
-
-The final models were compared on the held-out test set.
-
-| Model | Precision | Recall | mAP@50 | mAP@50–95 | Final Decision |
-|---|---:|---:|---:|---:|---|
-| **YOLO11n** | **0.8950** | 0.9091 | **0.9466** | **0.8788** | ✅ **Selected** |
-| YOLO26n | 0.8503 | **0.9198** | 0.9218 | 0.8400 | Comparison model |
-
-YOLO26n achieved the highest recall, while YOLO11n achieved higher:
-
-- Precision
-- mAP@50
-- mAP@50–95
-
----
-
-## YOLO11n Per-Class Performance
-
-The selected YOLO11n model achieved the following test-set mAP@50–95 values:
+### YOLO11n Per-Class Performance
 
 | Class | mAP@50–95 |
 |---|---:|
@@ -468,221 +34,18 @@ The selected YOLO11n model achieved the following test-set mAP@50–95 values:
 | Banana | 0.7698 |
 | Orange | **0.9909** |
 
-Orange achieved the strongest class-level result, while banana was the most challenging of the four classes according to mAP@50–95.
+Orange achieved the strongest class-level performance, while banana was the most challenging of the four classes.
 
 ---
 
-## Model Selection
+## Repository Structure
 
-### 🏆 YOLO11n was selected as the final model.
-
-Although YOLO26n achieved slightly higher recall:
-
-```text
-YOLO26n Recall = 0.9198
-YOLO11n Recall = 0.9091
-```
-
-YOLO11n achieved stronger results across the other primary evaluation metrics:
-
-```text
-Precision
-YOLO11n = 0.8950
-YOLO26n = 0.8503
-
-mAP@50
-YOLO11n = 0.9466
-YOLO26n = 0.9218
-
-mAP@50-95
-YOLO11n = 0.8788
-YOLO26n = 0.8400
-```
-
-Based on its stronger **overall held-out test performance**, YOLO11n was chosen as the final model for the real-time webcam application.
-
----
-
-# 📉 Training and Evaluation Artifacts
-
-Training artifacts for both experiments are available inside the `runs/` directory.
-
-Each model contains:
-
-```text
-args.yaml
-BoxF1_curve.png
-BoxP_curve.png
-BoxPR_curve.png
-BoxR_curve.png
-confusion_matrix.png
-confusion_matrix_normalized.png
-labels.jpg
-results.csv
-results.png
-```
-
-### Artifact Description
-
-| File | Description |
-|---|---|
-| `args.yaml` | Training/experiment configuration |
-| `results.csv` | Epoch-by-epoch training metrics |
-| `results.png` | Visualization of training and validation metrics |
-| `BoxF1_curve.png` | F1 score versus confidence |
-| `BoxP_curve.png` | Precision versus confidence |
-| `BoxR_curve.png` | Recall versus confidence |
-| `BoxPR_curve.png` | Precision-recall curve |
-| `confusion_matrix.png` | Detection confusion matrix |
-| `confusion_matrix_normalized.png` | Normalized confusion matrix |
-| `labels.jpg` | Visualization of dataset label characteristics |
-
----
-
-## YOLO11n Training Results
-
-![YOLO11n Training Results](Yolo11_results_UI.png)
-
-### YOLO11n Normalized Confusion Matrix
-
-![YOLO11n Normalized Confusion Matrix](Yolo11_confusion_matrix_normalized_UI.png)
-
-### YOLO11n Precision-Recall Curve
-
-![YOLO11n Precision Recall Curve](Yolo11_BoxPR_curve_UI.png)
-
----
-
-## YOLO26n Training Results
-
-![YOLO26n Training Results](Yolo26_results_UI.png)
-
-### YOLO26n Normalized Confusion Matrix
-
-![YOLO26n Normalized Confusion Matrix](Yolo26_confusion_matrix_normalized_UI.png)
-
-### YOLO26n Precision-Recall Curve
-
-![YOLO26n Precision Recall Curve](Yolo26_BoxPR_curve_UI.png)
-
----
-
-# 📹 Real-Time Webcam Application
-
-After model comparison, YOLO11n was integrated into a real-time webcam application using **OpenCV**.
-
-The application:
-
-- Opens the default webcam.
-- Requests a camera resolution of `1920 × 1080`.
-- Requests up to `60 FPS` when supported by the camera.
-- Performs YOLO inference using an image size of `640`.
-- Uses a confidence threshold of `0.40`.
-- Draws predicted bounding boxes.
-- Displays predicted class labels.
-- Counts detections for each fruit class.
-- Displays the total number of detected fruits.
-- Supports fullscreen display.
-- Runs continuously until the user exits.
-
-### Webcam Pipeline
-
-```text
-Webcam
-   │
-   ▼
-Capture Frame
-   │
-   ▼
-YOLO11n Inference
-   │
-   ▼
-Confidence Filtering
-   │
-   ▼
-Bounding Boxes + Class Predictions
-   │
-   ▼
-Count Predictions by Class
-   │
-   ▼
-Calculate Total Detections
-   │
-   ▼
-Display Annotated Frame
-```
-
----
-
-## Detection Settings
-
-| Setting | Value |
-|---|---:|
-| Selected model | YOLO11n |
-| Confidence threshold | 0.40 |
-| Inference image size | 640 |
-| Requested camera width | 1920 |
-| Requested camera height | 1080 |
-| Requested camera FPS | 60 |
-| Default camera ID | 0 |
-
-> Actual camera resolution and FPS depend on the webcam hardware and driver.
-
----
-
-## Controls
-
-| Key | Action |
-|---|---|
-| `Q` | Quit the application |
-| `F` | Toggle fullscreen mode |
-
----
-
-## Counting Behavior
-
-The application counts detections independently in each webcam frame.
-
-For example:
-
-```text
-APPLE : 2
-BANANA : 1
-ORANGE : 1
-
-TOTAL : 4
-```
-
-Only fruit classes detected in the current frame are displayed in the counting panel.
-
-> **Important:** This is frame-level object counting, not persistent multi-object tracking. Objects are not assigned persistent IDs between frames.
-
----
-
-# 🎬 Demo
-
-A demonstration of the real-time fruit detection system is available here:
-
-**[▶ Watch the Fruit Detection Demo](Demo/Fruit-Detection.mp4)**
-
-The demo shows the selected **YOLO11n model** performing real-time webcam inference, including:
-
-- Fruit detection
-- Bounding-box visualization
-- Fruit classification
-- Multiple-object detection
-- Per-class counting
-- Total detection counting
-
----
-
-# 📁 Repository Structure
+The repository is organized to separate the dataset, preprocessing pipeline, trained models, experiment results, application scripts, and demonstration files.
 
 ```text
 Fruit-Detection/
 │
 ├── Data/
-│   │
 │   ├── Collected_Data/
 │   │   └── [collected images]
 │   │
@@ -691,7 +54,6 @@ Fruit-Detection/
 │   │   │   ├── train/
 │   │   │   ├── val/
 │   │   │   └── test/
-│   │   │
 │   │   └── labels/
 │   │       ├── train/
 │   │       ├── val/
@@ -722,8 +84,7 @@ Fruit-Detection/
 │   └── Fixing_Roboflow_Data.py
 │
 ├── runs/
-│   │
-│   ├── Yolo11n/
+│   ├── yolo11n/
 │   │   ├── args.yaml
 │   │   ├── BoxF1_curve.png
 │   │   ├── BoxP_curve.png
@@ -735,7 +96,7 @@ Fruit-Detection/
 │   │   ├── results.csv
 │   │   └── results.png
 │   │
-│   └── Yolo26n/
+│   └── yolo26n/
 │       ├── args.yaml
 │       ├── BoxF1_curve.png
 │       ├── BoxP_curve.png
@@ -759,157 +120,629 @@ Fruit-Detection/
 └── .gitignore
 ```
 
-> Some raw/source data may be intentionally excluded from the public repository depending on privacy and source-licensing restrictions. The structure above documents the project's development organization; the public repository may contain only the distributable subset.
+> Some locally used data was intentionally excluded from the public repository for privacy and source-distribution considerations.
 
 ---
 
-# 📂 Directory Description
+## 🎬 Demo
 
-| Directory | Purpose |
+The final application uses the selected **YOLO11n model** to perform real-time fruit detection and counting from webcam footage.
+
+### ▶ [Watch the Real-Time Fruit Detection Demo](Demo/Fruit-Detection.mp4)
+
+The demo demonstrates:
+
+- Real-time fruit detection
+- Bounding-box visualization
+- Fruit classification
+- Multiple-object detection
+- Per-class fruit counting
+- Total detection counting
+
+---
+
+## Project Overview
+
+This project was developed for **educational purposes** to explore the complete lifecycle of a computer vision object detection system.
+
+The goal was not only to train an object detector, but to build an end-to-end pipeline capable of taking data from multiple sources, preparing it for training, comparing different YOLO models, and deploying the selected model in a real webcam environment.
+
+The final system can detect and classify multiple fruits appearing simultaneously in a webcam frame and display both **per-class counts and the total number of detections**.
+
+### Project Workflow
+
+```text
+        Kaggle Dataset
+               │
+        Roboflow Dataset
+               │
+    Internet-Collected Images
+               │
+    Custom Webcam Images
+               │
+               ▼
+      Annotation Review
+               │
+               ▼
+       Data Preprocessing
+               │
+               ▼
+   Dataset Merging & Balancing
+               │
+               ▼
+   Train / Validation / Test
+               │
+          ┌────┴────┐
+          ▼         ▼
+      YOLO11n    YOLO26n
+          │         │
+          ▼         ▼
+       Training   Training
+          │         │
+          ▼         ▼
+    Best Model   Best Model
+          │         │
+          └────┬────┘
+               ▼
+      Held-Out Test Set
+               │
+               ▼
+       Model Comparison
+               │
+               ▼
+      YOLO11n Selected
+               │
+               ▼
+     Real-Time Webcam
+               │
+               ▼
+ Detection + Classification
+               │
+               ▼
+      Fruit Counting
+```
+
+---
+
+## Dataset
+
+### Classes
+
+The project uses four YOLO object classes:
+
+| Class ID | Fruit |
+|---:|---|
+| `0` | Apple |
+| `1` | Mango |
+| `2` | Banana |
+| `3` | Orange |
+
+### Data Sources
+
+The dataset was constructed from multiple sources to increase visual diversity and expose the models to different fruit appearances, backgrounds, environments, and object combinations.
+
+#### Kaggle
+
+Part of the dataset was obtained from the **Fruits Images Dataset (Object Detection)** available on Kaggle:
+
+**Dataset:**  
+https://www.kaggle.com/datasets/afsananadia/fruits-images-dataset-object-detection
+
+#### Roboflow
+
+Additional annotated fruit data was obtained and processed through **Roboflow**.
+
+Roboflow was also used during the annotation review workflow to inspect and verify the data before preparation of the final dataset.
+
+The exact original Roboflow project URL is no longer available, so no specific source URL is claimed in this repository.
+
+#### Internet-Collected Images
+
+Additional fruit images were manually collected from public internet image searches to increase visual diversity.
+
+#### Custom Webcam Images
+
+Additional real-world images were captured using a webcam.
+
+Mango images were captured while holding a mango in front of the camera. This provided examples that more closely resemble the environment in which the final real-time detector operates.
+
+Negative/background images containing **none of the target fruits** were also captured during development.
+
+---
+
+### Public Dataset Composition
+
+During development, the single-fruit portion of the dataset was balanced to approximately **175 images per fruit class**.
+
+After privacy-related exclusions, the public dataset currently contains:
+
+| Category | Public Images |
+|---|---:|
+| Apple-only | 175 |
+| Mango-only | 153 |
+| Banana-only | 175 |
+| Orange-only | 175 |
+| Mixed-fruit | 39 |
+| Negative/background | 0 |
+| **Total Public Images** | **717** |
+
+The **39 mixed-fruit images** contain more than one fruit and help expose the detector to scenes containing multiple objects or classes simultaneously.
+
+> These numbers represent image counts rather than annotated object-instance counts. A mixed-fruit image may contain several annotated objects.
+
+### Dataset Split
+
+The dataset was divided approximately into:
+
+| Split | Percentage |
+|---|---:|
+| Training | ~70% |
+| Validation | ~20% |
+| Test | ~10% |
+
+The training set was used for optimization, the validation set was used during training, and the test set was reserved for final model evaluation.
+
+---
+
+### 🔒 Privacy Note
+
+> **The publicly available dataset is not identical to the complete local dataset used for the reported experiments.**
+
+The models reported in this repository were trained using the complete local dataset, which included additional personally collected webcam images.
+
+Some personally collected mango images and negative/background images were intentionally excluded from the public GitHub repository to protect personal privacy.
+
+The trained models and reported experimental results were produced **before these privacy-related exclusions**.
+
+Therefore, the public dataset should be considered a **privacy-safe subset of the original experimental dataset**, and retraining exclusively on the public subset may not reproduce the reported metrics exactly.
+
+---
+
+## Data Preprocessing
+
+Several preprocessing scripts were developed to prepare data from different sources before model training.
+
+### Custom Data Collection
+
+`Capturing_Mango_Images.py` was developed to capture additional real-world mango images directly from a webcam.
+
+Its purpose was to:
+
+- Increase real-world mango examples
+- Introduce webcam-style backgrounds and lighting
+- Increase dataset diversity
+- Provide examples closer to the final deployment environment
+
+`Capturing_Negative_Images.py` captures webcam scenes where none of the four target fruits are present.
+
+Negative/background examples were used during local experimentation to expose the detector to scenes without target objects.
+
+### Dataset Cleanup
+
+`Fixing_Kaggle_Data.py` and `Fixing_Roboflow_Data.py` were used to clean and standardize data after annotation review.
+
+The preprocessing included:
+
+- Bounding-box coordinate cleanup
+- Annotation standardization
+- Filename normalization
+- Preparation for merging into the final dataset
+
+### Annotation Format
+
+The final dataset uses the standard **YOLO object detection format**:
+
+```text
+class_id x_center y_center width height
+```
+
+The bounding-box coordinates are normalized relative to the image dimensions.
+
+---
+
+## Model Training
+
+Two lightweight YOLO models were investigated:
+
+- **YOLO11n**
+- **YOLO26n**
+
+Both were initialized from pretrained Ultralytics weights and fine-tuned on the fruit detection dataset.
+
+### Training Configuration
+
+Both experiments used comparable configurations:
+
+| Configuration | YOLO11n | YOLO26n |
+|---|---:|---:|
+| Initial weights | `yolo11n.pt` | `yolo26n.pt` |
+| Maximum epochs | 100 | 100 |
+| Early stopping patience | 15 | 15 |
+| Image size | 640 | 640 |
+| Batch size | 8 | 8 |
+| Optimizer | Auto | Auto |
+| Framework | Ultralytics | Ultralytics |
+| Training plots | Enabled | Enabled |
+
+The trained checkpoints included in this repository are located in:
+
+```text
+Models/
+├── Yolo11.pt
+└── Yolo26.pt
+```
+
+---
+
+## Evaluation Methodology
+
+The final comparison was performed using the **best checkpoint obtained during training** for each model.
+
+Each model was evaluated independently on the held-out **test split**.
+
+```python
+metrics = model.val(
+    data="Data/Final_data/data.yaml",
+    split="test",
+    imgsz=640,
+    batch=8
+)
+```
+
+Both models therefore used the same:
+
+- Test dataset
+- Image size of `640`
+- Batch size of `8`
+- Ultralytics evaluation pipeline
+
+### Evaluation Metrics
+
+**Precision**  
+Measures how many predicted detections were correct.
+
+**Recall**  
+Measures how many ground-truth objects were successfully detected.
+
+**mAP@50**  
+Mean Average Precision using an IoU threshold of 0.50.
+
+**mAP@50–95**  
+Mean Average Precision averaged across IoU thresholds from 0.50 through 0.95, providing a stricter assessment of detection and localization quality.
+
+The final YOLO11n vs YOLO26n comparison shown at the beginning of this README is based on these **held-out test results**, rather than training performance alone.
+
+---
+
+## Experiment Visuals
+
+Training and evaluation artifacts for both experiments are available in the `runs/` directory.
+
+### YOLO11n
+
+#### Training Results
+
+![YOLO11n Training Results](runs/yolo11n/results.png)
+
+#### Normalized Confusion Matrix
+
+![YOLO11n Normalized Confusion Matrix](runs/yolo11n/confusion_matrix_normalized.png)
+
+#### Precision-Recall Curve
+
+![YOLO11n Precision-Recall Curve](runs/yolo11n/BoxPR_curve.png)
+
+---
+
+### YOLO26n
+
+#### Training Results
+
+![YOLO26n Training Results](runs/yolo26n/results.png)
+
+#### Normalized Confusion Matrix
+
+![YOLO26n Normalized Confusion Matrix](runs/yolo26n/confusion_matrix_normalized.png)
+
+#### Precision-Recall Curve
+
+![YOLO26n Precision-Recall Curve](runs/yolo26n/BoxPR_curve.png)
+
+---
+
+## Real-Time Webcam Application
+
+After model comparison, the selected **YOLO11n model** was integrated with OpenCV for real-time webcam inference.
+
+### Configuration
+
+| Setting | Value |
+|---|---:|
+| Selected model | YOLO11n |
+| Confidence threshold | 0.40 |
+| Inference image size | 640 |
+| Requested camera resolution | 1920 × 1080 |
+| Requested camera FPS | 60 |
+| Default camera ID | 0 |
+
+> Actual camera resolution and FPS depend on the available webcam hardware and driver.
+
+### Webcam Pipeline
+
+```text
+Webcam Frame
+     │
+     ▼
+YOLO11n Inference
+     │
+     ▼
+Confidence Filtering
+     │
+     ▼
+Bounding Boxes + Class Predictions
+     │
+     ▼
+Per-Class Counting
+     │
+     ▼
+Total Detection Count
+     │
+     ▼
+Annotated Live Display
+```
+
+The application only displays fruit classes currently detected in the frame.
+
+Example:
+
+```text
+APPLE : 2
+BANANA : 1
+ORANGE : 1
+
+TOTAL : 4
+```
+
+### Controls
+
+| Key | Action |
 |---|---|
-| `Data/` | Dataset sources and final processed YOLO dataset |
-| `Data/Collected_Data/` | Additional manually collected images |
-| `Data/Kaggle_Data/` | Data derived from the Kaggle object detection dataset |
-| `Data/Roboflow_Data/` | Data processed/reviewed through Roboflow |
-| `Data/Final_data/` | Final train/validation/test dataset used by the pipeline |
-| `Demo/` | Real-time application demonstration |
-| `Models/` | Trained YOLO model checkpoints |
-| `Preprocessing/` | Dataset collection, cleanup, and preprocessing scripts |
-| `runs/` | Training/evaluation metrics and generated visualizations |
-| `Scripts/` | Training, evaluation, and real-time inference scripts |
+| `Q` | Quit the application |
+| `F` | Toggle fullscreen |
+
+> **Counting behavior:** The application performs frame-level counting. It does not currently perform persistent multi-object tracking or assign persistent IDs to objects across frames.
 
 ---
 
-# 💻 Installation
+## Installation and Usage
 
-## 1. Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/mark-360/Fruit-Detection.git
 cd Fruit-Detection
 ```
 
----
+### 2. Create a Virtual Environment
 
-## 2. Create a Virtual Environment
-
-Creating a virtual environment is recommended.
-
-### Windows
+#### Windows
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
 ```
 
-### Linux/macOS
+#### Linux / macOS
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
----
-
-## 3. Install Dependencies
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-The main dependencies are:
+The primary dependencies are:
 
 ```text
 ultralytics
 opencv-python
 ```
 
----
-
-# 🚀 Usage
-
-## Real-Time Webcam Detection
-
-The final application uses the trained YOLO11n model.
-
-Run:
+### 4. Run Real-Time Detection
 
 ```bash
 python Scripts/Webcam.py
 ```
 
-Then:
+### Training
 
-```text
-Q → Quit
-F → Toggle Fullscreen
-```
-
----
-
-## Train YOLO11n
+Train YOLO11n:
 
 ```bash
 python Scripts/Train_yolo11.py
 ```
 
----
-
-## Train YOLO26n
+Train YOLO26n:
 
 ```bash
 python Scripts/Train_yolo26.py
 ```
 
----
+### Evaluation
 
-## Evaluate YOLO11n
+Evaluate YOLO11n:
 
 ```bash
 python Scripts/Evaluation_yolo11.py
 ```
 
----
-
-## Evaluate YOLO26n
+Evaluate YOLO26n:
 
 ```bash
 python Scripts/Evaluation_yolo26.py
 ```
 
+> Some scripts currently contain local path configuration and may require path adjustment depending on where the repository is stored.
+
+---
+## Data Attribution and Usage
+
+This project combines data from multiple sources, including:
+
+- The Kaggle **Fruits Images Dataset (Object Detection)**
+- Data processed through Roboflow
+- Images manually collected from public internet searches
+- Personally captured webcam images used during local experimentation
+
+### Kaggle Source
+
+https://www.kaggle.com/datasets/afsananadia/fruits-images-dataset-object-detection
+
+The exact original Roboflow project URL is no longer available.
+
+Third-party images remain subject to their respective original licenses, copyright, and usage conditions.
+
+Some personally captured data used during model development has intentionally **not been published** for privacy reasons.
+
+The inclusion of third-party images in the development workflow should not be interpreted as a claim of ownership over those images.
+
 ---
 
-# 🧩 Scripts
+## Repository Guide
 
-## Training Scripts
+This section provides a detailed explanation of the repository for anyone who wants to explore, understand, or reproduce the project.
 
-### `Scripts/Train_yolo11.py`
+### `Data/`
+
+Contains the data used throughout the project.
+
+#### `Collected_Data/`
+
+Contains additional images manually collected during dataset development.
+
+#### `Kaggle_Data/`
+
+Contains data originating from the Kaggle Fruits Images Object Detection dataset.
+
+Its structure separates images and labels into training, validation, and test splits.
+
+#### `Roboflow_Data/`
+
+Contains data processed through the Roboflow annotation workflow.
+
+#### `Final_data/`
+
+Contains the consolidated dataset prepared for YOLO training and evaluation.
+
+```text
+Final_data/
+├── train/
+├── val/
+├── test/
+└── data.yaml
+```
+
+`data.yaml` defines the dataset paths and class configuration required by Ultralytics YOLO.
+
+---
+
+### `Demo/`
+
+Contains:
+
+```text
+Fruit-Detection.mp4
+```
+
+This video demonstrates the final YOLO11n model performing real-time webcam fruit detection and counting.
+
+---
+
+### `Models/`
+
+Contains the trained model checkpoints:
+
+```text
+Yolo11.pt
+Yolo26.pt
+```
+
+`Yolo11.pt` corresponds to the model selected for the final real-time application.
+
+`Yolo26.pt` is retained as the comparison model.
+
+---
+
+### `Preprocessing/`
+
+Contains scripts used during data collection and preparation.
+
+#### `Capturing_Mango_Images.py`
+
+Captures custom mango images from a webcam to provide additional real-world training examples.
+
+#### `Capturing_Negative_Images.py`
+
+Captures webcam scenes containing none of the target fruit classes for use as negative/background examples.
+
+#### `Fixing_Kaggle_Data.py`
+
+Cleans and standardizes Kaggle-derived annotations and filenames before integration into the final dataset.
+
+#### `Fixing_Roboflow_Data.py`
+
+Cleans and standardizes data processed through the Roboflow annotation workflow.
+
+---
+
+### `runs/`
+
+Stores experiment artifacts for the two trained models:
+
+```text
+runs/
+├── yolo11n/
+└── yolo26n/
+```
+
+Each experiment directory contains:
+
+| File | Purpose |
+|---|---|
+| `args.yaml` | Training/experiment configuration |
+| `results.csv` | Epoch-by-epoch training metrics |
+| `results.png` | Training and validation metric visualization |
+| `BoxF1_curve.png` | F1 score vs. confidence |
+| `BoxP_curve.png` | Precision vs. confidence |
+| `BoxR_curve.png` | Recall vs. confidence |
+| `BoxPR_curve.png` | Precision-recall curve |
+| `confusion_matrix.png` | Detection confusion matrix |
+| `confusion_matrix_normalized.png` | Normalized confusion matrix |
+| `labels.jpg` | Dataset label visualization |
+
+---
+
+### `Scripts/`
+
+Contains the main model training, evaluation, and deployment code.
+
+#### `Train_yolo11.py`
 
 Loads pretrained YOLO11n weights and fine-tunes the model on the fruit detection dataset.
 
-Main configuration:
+#### `Train_yolo26.py`
 
-```text
-Epochs: 100
-Patience: 15
-Image size: 640
-Batch size: 8
-Optimizer: Auto
-```
+Loads pretrained YOLO26n weights and performs the corresponding comparison experiment.
 
-### `Scripts/Train_yolo26.py`
+#### `Evaluation_yolo11.py`
 
-Performs the equivalent training experiment using YOLO26n under comparable settings.
+Loads the best YOLO11n checkpoint and evaluates it specifically on the held-out test split.
 
----
-
-## Evaluation Scripts
-
-### `Scripts/Evaluation_yolo11.py`
-
-Loads the best YOLO11n training checkpoint and evaluates it on the held-out test split.
-
-Reports:
+It reports:
 
 - Precision
 - Recall
@@ -917,139 +750,37 @@ Reports:
 - mAP@50–95
 - Per-class mAP@50–95
 
-### `Scripts/Evaluation_yolo26.py`
+#### `Evaluation_yolo26.py`
 
 Performs the equivalent held-out test evaluation for YOLO26n.
 
----
-
-## Real-Time Application
-
-### `Scripts/Webcam.py`
+#### `Webcam.py`
 
 Runs the selected YOLO11n model against live webcam frames.
 
-Features include:
+It handles:
 
-- Live object detection
+- Webcam capture
+- YOLO inference
 - Bounding-box visualization
+- Class prediction
 - Confidence filtering
 - Per-class counting
 - Total detection counting
-- Fullscreen mode
+- Fullscreen display
 - Keyboard controls
 
 ---
+## Summary
 
-## Preprocessing Scripts
-
-### `Preprocessing/Capturing_Mango_Images.py`
-
-Captures custom real-world mango images using a webcam.
-
-### `Preprocessing/Capturing_Negative_Images.py`
-
-Captures background/negative webcam images containing no target fruits.
-
-### `Preprocessing/Fixing_Kaggle_Data.py`
-
-Cleans annotation coordinates and normalizes filenames for Kaggle-derived data.
-
-### `Preprocessing/Fixing_Roboflow_Data.py`
-
-Cleans and standardizes data exported from the Roboflow annotation workflow.
-
----
-
-# 🛠️ Technologies Used
-
-- **Python**
-- **Ultralytics YOLO**
-- **YOLO11n**
-- **YOLO26n**
-- **OpenCV**
-- **Computer Vision**
-- **Object Detection**
-- **Transfer Learning / Fine-Tuning**
-- **Roboflow**
-- **Git**
-- **GitHub**
-
----
-
-# ⚠️ Limitations
-
-Although the models achieved strong results on the held-out test set, several limitations remain.
-
-### 1. Limited Number of Classes
-
-The detector currently supports only:
-
-- Apple
-- Mango
-- Banana
-- Orange
-
-Other fruits are outside the model's intended class set.
-
-### 2. Dataset Size
-
-The dataset is relatively small compared with large-scale production object detection datasets.
-
-Greater variation in:
-
-- Lighting
-- Camera quality
-- Backgrounds
-- Fruit sizes
-- Viewing angles
-- Occlusion
-- Fruit varieties
-
-could improve generalization.
-
-### 3. Public Dataset Difference
-
-Some personally collected training data was removed from the public repository for privacy.
-
-Therefore, the publicly available dataset is not an exact copy of the complete dataset used to generate the reported model results.
-
----
-# 📜 Data Attribution and Usage
-
-This repository combines data from multiple sources, including:
-
-- The Kaggle **Fruits Images Dataset (Object Detection)**
-- Data processed through Roboflow
-- Images manually collected from public internet searches
-- Personally captured webcam images used during local experimentation
-
-Kaggle source:
-
-https://www.kaggle.com/datasets/afsananadia/fruits-images-dataset-object-detection
-
-The original Roboflow source URL is not currently available.
-
-Images obtained from third-party sources remain subject to their respective original licenses, copyright, and usage conditions.
-
-Some personally captured data used during model development has intentionally **not** been published for privacy reasons.
-
-The inclusion of a third-party image in the development workflow should not be interpreted as a claim of ownership over that image.
-
----
-
-# 📌 Summary
-
-This project demonstrates an end-to-end object detection workflow covering:
+This project demonstrates an end-to-end object detection workflow:
 
 ```text
 Data Collection
       ↓
-Data Cleaning
+Data Cleaning & Preprocessing
       ↓
-Annotation Preparation
-      ↓
-Dataset Balancing
+Dataset Construction
       ↓
 YOLO11n + YOLO26n Training
       ↓
@@ -1064,11 +795,13 @@ Real-Time Webcam Detection
 Fruit Classification + Counting
 ```
 
-The final comparison showed that **YOLO11n provided the strongest overall test performance**, reaching:
+### Final YOLO11n Performance
 
-- **Precision:** 0.8950
-- **Recall:** 0.9091
-- **mAP@50:** 0.9466
-- **mAP@50–95:** 0.8788
+| Metric | Result |
+|---|---:|
+| Precision | **0.8950** |
+| Recall | **0.9091** |
+| mAP@50 | **0.9466** |
+| mAP@50–95 | **0.8788** |
 
-It was therefore selected for the final real-time fruit detection and counting application.
+**YOLO11n was selected as the final model due to its stronger overall performance on the held-out test set and was subsequently integrated into the real-time webcam fruit detection and counting application.**
