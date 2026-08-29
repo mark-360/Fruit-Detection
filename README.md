@@ -545,25 +545,25 @@ results.png
 
 ### YOLO11n Normalized Confusion Matrix
 
-![YOLO11n Normalized Confusion Matrix](runs/Yolo11n/confusion_matrix_normalized.png)
+![YOLO11n Normalized Confusion Matrix](Yolo11_confusion_matrix_normalized_UI.png)
 
 ### YOLO11n Precision-Recall Curve
 
-![YOLO11n Precision Recall Curve](runs/Yolo11n/BoxPR_curve.png)
+![YOLO11n Precision Recall Curve](Yolo11_BoxPR_curve_UI.png)
 
 ---
 
 ## YOLO26n Training Results
 
-![YOLO26n Training Results](runs/Yolo26n/results.png)
+![YOLO26n Training Results](Yolo26_results_UI.png)
 
 ### YOLO26n Normalized Confusion Matrix
 
-![YOLO26n Normalized Confusion Matrix](runs/Yolo26n/confusion_matrix_normalized.png)
+![YOLO26n Normalized Confusion Matrix](Yolo26_confusion_matrix_normalized_UI.png)
 
 ### YOLO26n Precision-Recall Curve
 
-![YOLO26n Precision Recall Curve](runs/Yolo26n/BoxPR_curve.png)
+![YOLO26n Precision Recall Curve](Yolo26_BoxPR_curve_UI.png)
 
 ---
 
