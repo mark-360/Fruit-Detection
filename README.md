@@ -541,7 +541,7 @@ results.png
 
 ## YOLO11n Training Results
 
-![YOLO11n Training Results](runs/Yolo11n/results.png)
+![YOLO11n Training Results](Yolo11_results_UI.png)
 
 ### YOLO11n Normalized Confusion Matrix
 
